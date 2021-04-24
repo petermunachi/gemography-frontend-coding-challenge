@@ -48,6 +48,10 @@
   margin-right: .8rem;
 }
 
+.text-center{
+  text-align: center;
+}
+
 @media screen and (max-width: 720px) {
   /* .d-flex{
     display: block;
