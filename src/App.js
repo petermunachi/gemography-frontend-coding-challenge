@@ -47,12 +47,14 @@ function App() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const recentRepos = await response.json();
+        console.log(recentRepos);
        
         // here we simulate adding new repo to List
         const newList = repos.concat(recentRepos.items);
         setRepos(newList);
 
       } catch(e) {
+        alert("Error trying to fetch repos, please check your internet connection and reload the page")
         console.log(e);
       }
     }
@@ -71,9 +73,9 @@ function App() {
   }
 
   //calculate number of days when a repo is created
-  const calculateNoOfDays = (entities) => {
+  const calculateNoOfDays = (rawDate) => {
     // To set two dates to two variables
-    let date1 = new Date(entities);
+    let date1 = new Date(rawDate);
     let date2 = new Date();
       
     // To calculate the time difference of two dates
@@ -84,18 +86,19 @@ function App() {
     return Math.floor(difference_In_Days);
   }
 
-
-
-  console.log(repos);
+  //Format number greather than 1000 to approximately 1k
+  function numFormatter(num) {
+    return Math.abs(num) > 999 ? Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'k' : Math.sign(num)*Math.abs(num)
+  }
 
   let repoItems = repos.map((repo, index) =>(
     <RepoList 
       key={repo.index} 
       name={repo.name} 
-      issues={repo.open_issues_count} 
+      issues={numFormatter(repo.open_issues_count)} 
       avatar={repo.owner.avatar_url} 
       description={repo.description} 
-      stars={repo.stargazers_count}
+      stars={numFormatter(repo.stargazers_count)}
       interval={calculateNoOfDays(repo.created_at)}
     />
   ))
