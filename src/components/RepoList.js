@@ -25,7 +25,7 @@ function RepoList(props) {
               Issues: <b>{props.issues}</b>
             </div>
             <div className="interval-container pr-1">
-              Submitted {props.interval} by <b>{props.name}</b>
+              Submitted {props.interval} days ago by <b>{props.name}</b>
             </div>
           </div>
   

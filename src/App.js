@@ -9,6 +9,8 @@ function App() {
   const [page, setPage] = useState(1);
   //repo pages
   const [repos, setRepos] = useState([]);
+  //track when the post finishes
+  const [finished, setFinished] = useState(true);
 
   // add loader reference 
   const loader = useRef(null);
@@ -41,6 +43,7 @@ function App() {
         const response = await fetch(`https://api.github.com/search/repositories?q=created:%3E${lastThirtyDays}&sort=stars&order=desc&page=${page}`);
       
         if (!response.ok) {
+          setFinished(false);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const recentRepos = await response.json();
@@ -48,8 +51,6 @@ function App() {
         // here we simulate adding new repo to List
         const newList = repos.concat(recentRepos.items);
         setRepos(newList);
-        
-        
 
       } catch(e) {
         console.log(e);
@@ -60,14 +61,30 @@ function App() {
   },[page]);
 
 
-   // here we handle what happens when user scrolls to Load More repo
-   // in this case we just update page variable
-    const handleObserver = (entities) => {
-        const target = entities[0];
-        if (target.isIntersecting) {   
-            setPage((page) => page + 1)
-        }
-    }
+  // here we handle what happens when user scrolls to Load More repo
+  // in this case we just update page variable
+  const handleObserver = (entities) => {
+      const target = entities[0];
+      if (target.isIntersecting) {   
+          setPage((page) => page + 1)
+      }
+  }
+
+  //calculate number of days when a repo is created
+  const calculateNoOfDays = (entities) => {
+    // To set two dates to two variables
+    let date1 = new Date(entities);
+    let date2 = new Date();
+      
+    // To calculate the time difference of two dates
+    let difference_In_Time = date2.getTime() - date1.getTime();
+      
+    // To calculate the no. of days between two dates
+    let difference_In_Days = difference_In_Time / (1000 * 3600 * 24);
+    return Math.floor(difference_In_Days);
+  }
+
+
 
   console.log(repos);
 
@@ -79,6 +96,7 @@ function App() {
       avatar={repo.owner.avatar_url} 
       description={repo.description} 
       stars={repo.stargazers_count}
+      interval={calculateNoOfDays(repo.created_at)}
     />
   ))
 
@@ -87,9 +105,14 @@ function App() {
   return (
     <div className="App">
       {repoItems}
-      <div className="loading text-center" ref={loader}>
-        Loading
-      </div>
+      
+      {
+        finished ?(
+          <div className="loading text-center" ref={loader}>
+            Loading
+          </div> 
+        ):null
+      }
     </div>
   );
 
