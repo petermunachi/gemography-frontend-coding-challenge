@@ -47,7 +47,6 @@ function App() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const recentRepos = await response.json();
-        console.log(recentRepos);
        
         // here we simulate adding new repo to List
         const newList = repos.concat(recentRepos.items);
